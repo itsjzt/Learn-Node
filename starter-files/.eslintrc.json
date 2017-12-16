@@ -5,22 +5,19 @@
         "es6": true,
         "node": true
     },
-    "extends": "eslint:recommended",
     "parserOptions": {
+        "ecmaFeatures": {
+            "jsx": false
+        },
         "sourceType": "module"
     },
     "rules": {
-        "indent": [
-            "error",
-            2
-        ],
-        "quotes": [
-            "error",
-            "single"
-        ],
-        "semi": [
-            "error",
-            "never"
-        ]
+        "no-const-assign": "warn",
+        "no-this-before-super": "warn",
+        "no-undef": "warn",
+        "no-unreachable": "warn",
+        "no-unused-vars": "warn",
+        "constructor-super": "warn",
+        "valid-typeof": "warn"
     }
 }
