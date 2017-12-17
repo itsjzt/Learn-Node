@@ -9,24 +9,24 @@ router.get('/', catchErrors(storeController.getStores))
 
 router.get('/stores', catchErrors(storeController.getStores))
 
-router.get('/add', 
+router.get('/add',
 	authController.isLoggedIn,
 	storeController.addStore
 )
 
-router.post('/add',  
+router.post('/add',
 	storeController.upload,
-	catchErrors(storeController.resize), 
+	catchErrors(storeController.resize),
 	catchErrors(storeController.createStore)
 )
 
 router.post('/add/:id',
 	storeController.upload,
-	catchErrors(storeController.resize),  
+	catchErrors(storeController.resize),
   catchErrors(storeController.updateStore)
 )
 
-router.get('/stores/:id/edit', catchErrors(storeController.editStore))  
+router.get('/stores/:id/edit', catchErrors(storeController.editStore))
 
 router.get('/store/:slug', catchErrors(storeController.getStoreBySlug))
 
@@ -40,7 +40,7 @@ router.get('/register', userController.registerForm)
 // 1. validate the registration data
 // 2. register the user
 // 3. we need to log them in
-router.post('/register', 
+router.post('/register',
 	userController.validateRegister,
 	userController.register,
 	authController.login
@@ -48,4 +48,7 @@ router.post('/register',
 
 router.get('/logout', authController.logout)
 
-module.exports = router 
+router.get('/account', authController.isLoggedIn, userController.account)
+router.post('/account', catchErrors(userController.updateAccount))
+
+module.exports = router
