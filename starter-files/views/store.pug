@@ -2,7 +2,6 @@ extends layout
 
 block content
 	.single
-		pre= h.dump(store)
 		.single__hero
 			img.single__image(src=`/uploads/${store.photo || 'store.png'}`)
 			h2.title.title--single
