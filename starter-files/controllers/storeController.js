@@ -33,12 +33,13 @@ exports.resize = async (req, res, next) => {
   // now we resize
   const photo = await jimp.read(req.file.buffer)
   await photo.resize(800, jimp.AUTO)
-  await photo.write(`./public/uploads/${req.body.photo}`) 
+  await photo.write(`./public/uploads/${req.body.photo}`)
   // once file is saved, keep going
   next()
 }
 
 exports.createStore = async (req, res) => {
+  req.body.author = req.user._id
   const store = await (new Store(req.body)).save()
   req.flash('success', `Successfully created ${store.name}. Care to leave a review?`)
   res.redirect(`/store/${store.slug}`)
@@ -50,12 +51,18 @@ exports.getStores = async (req, res) => {
   res.render('stores', { title: 'Stores', stores })
 }
 
+const confirmOwner = (store, user) => {
+  if (!store.author.equals(user._id) ) {
+    throw Error('You must own a store to edit it!')
+  }
+}
+
 exports.editStore = async (req, res) => {
   // 1. find store of given ID
   const store = await Store.findOne({ _id: req.params.id })
   // 2. conform that they are the owner of store
-  // TODO
-  // 3. render out the edit form so they can edit them 
+  confirmOwner(store, req.user)
+  // 3. render out the edit form so they can edit them
   res.render('editStore', { title: `Edit ${store.name}`, store })
 }
 
@@ -65,7 +72,7 @@ exports.updateStore = async (req, res) => {
   // find the store and update them
   const store = await Store.findOneAndUpdate({ _id: req.params.id }, req.body, {
     new: true, // return a new store instead of the old
-    runValidators: true 
+    runValidators: true
   }).exec()
   req.flash('success', `Successfully updated <strong>${store.name}</strong>. <a href="/stores/${store.slug}">View Store ➡</a>`)
   res.redirect(`/stores/${store._id}/edit`)
@@ -73,7 +80,7 @@ exports.updateStore = async (req, res) => {
 }
 
 exports.getStoreBySlug = async (req, res, next) => {
-  const store = await Store.findOne({ slug: req.params.slug })
+  const store = await Store.findOne({ slug: req.params.slug }).populate('author')
   if (!store) return next()
   res.render('store', { store, title: store.name })
 }
